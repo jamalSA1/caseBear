@@ -51,7 +51,7 @@ export default function DesignConfiguratord({
   const router = useRouter()
 
 
-  const {mutate: saveConfig} = useMutation({
+  const {mutate: saveConfig, isPending} = useMutation({
     mutationKey: ["saveConfig"],
     mutationFn: async (args: saveConfigType) => {
       await Promise.all([saveConfiguration(), _saveConfig(args)])
@@ -344,7 +344,11 @@ export default function DesignConfiguratord({
               <p className="font-medium whitespace-nowrap">
                 {formatPrice((BASE_PRICE + options.finish.price + options.material.price) / 100)}
               </p>
-              <Button size="sm" className="w-full" onClick={() => saveConfig({
+              <Button size="sm" className="w-full"
+              isLoading={isPending}
+              disabled={isPending}
+              loadingText="Saving"
+              onClick={() => saveConfig({
                 configId,
                 color: options.color.value,
                 model: options.model.value,
