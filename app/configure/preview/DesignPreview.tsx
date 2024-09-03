@@ -66,6 +66,14 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
       setIsLoginModalOpen(true)
     }
   }
+// اضفته جديد
+  useEffect(() => {
+    const storedConfigId = localStorage.getItem('configurationId');
+    if (storedConfigId && user) {
+      createPaymentSession({ configId: storedConfigId });
+      localStorage.removeItem('configurationId');
+    }
+  }, [user]);
 
   return (
     <>
