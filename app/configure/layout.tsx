@@ -1,15 +1,8 @@
 import MaxWidthWrapper from '@/components/MaxWidthWrapper'
-import Steps from '@/components/Steps';
-import { Metadata } from 'next';
-import React from 'react'
+import Steps from '@/components/Steps'
+import { ReactNode } from 'react'
 
-export const metadata: Metadata = {
-  title: "create case",
-  description: "Create a beautiful case",
-};
-
-export default function Layout({children}: {children: React.ReactNode}) {
-
+const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <MaxWidthWrapper className='flex-1 flex flex-col'>
       <Steps />
@@ -17,3 +10,5 @@ export default function Layout({children}: {children: React.ReactNode}) {
     </MaxWidthWrapper>
   )
 }
+
+export default Layout

@@ -1,36 +1,50 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { db } from '@/db'
 import { formatPrice } from '@/lib/utils'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
-import { redirect } from 'next/navigation'
-import React from 'react'
+import { notFound } from 'next/navigation'
 import StatusDropdown from './StatusDropdown'
 
-export default async function DashboardPage() {
-  const {getUser} = getKindeServerSession()
+const Page = async () => {
+  const { getUser } = getKindeServerSession()
   const user = await getUser()
 
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+
   if (!user || user.email !== ADMIN_EMAIL) {
-    return redirect('/')
+    return notFound()
   }
 
   const orders = await db.order.findMany({
     where: {
       isPaid: true,
       createdAt: {
-        gte: new Date(new Date().setDate(new Date().getDate() - 7))
-      }
+        gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+      },
     },
     orderBy: {
-      createdAt: 'desc'
+      createdAt: 'desc',
     },
     include: {
       user: true,
-      shippingAddress: true
-    }
+      shippingAddress: true,
+    },
   })
 
   const lastWeekSum = await db.order.aggregate({
@@ -44,6 +58,7 @@ export default async function DashboardPage() {
       amount: true,
     },
   })
+
   const lastMonthSum = await db.order.aggregate({
     where: {
       isPaid: true,
@@ -57,55 +72,62 @@ export default async function DashboardPage() {
   })
 
   const WEEKLY_GOAL = 500
-  const MONTHLY_GOAL = 5000
+  const MONTHLY_GOAL = 2500
 
   return (
-    <div className='flex w-full min-h-screen bg-muted/40'>
-      <div className="max-w-7xl w-full mx-auto flex flex-col sm:gap-4 sm:py-4">
-        <div className="flex flex-col gap-16">
-          <div className="grid gap-4 sm:grid-cols-2">
+    <div className='flex min-h-screen w-full bg-muted/40'>
+      <div className='max-w-7xl w-full mx-auto flex flex-col sm:gap-4 sm:py-4'>
+        <div className='flex flex-col gap-16'>
+          <div className='grid gap-4 sm:grid-cols-2'>
             <Card>
               <CardHeader className='pb-2'>
-                <CardDescription>الأسبوع الماضي</CardDescription>
-                <CardTitle className='text-4xl'>{formatPrice(lastWeekSum._sum.amount ?? 0)}</CardTitle>
+                <CardDescription>Last Week</CardDescription>
+                <CardTitle className='text-4xl'>
+                  {formatPrice(lastWeekSum._sum.amount ?? 0)}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-muted-foreground">
-                 {formatPrice(WEEKLY_GOAL)}
-                 <span> من هدف </span>
+                <div className='text-sm text-muted-foreground'>
+                  of {formatPrice(WEEKLY_GOAL)} goal
                 </div>
               </CardContent>
               <CardFooter>
-                <Progress value={((lastWeekSum._sum.amount ?? 0) * 100 ) / WEEKLY_GOAL} />
+                <Progress
+                  value={((lastWeekSum._sum.amount ?? 0) * 100) / WEEKLY_GOAL}
+                />
               </CardFooter>
             </Card>
             <Card>
               <CardHeader className='pb-2'>
-                <CardDescription>الشهر الماضي</CardDescription>
-                <CardTitle className='text-4xl'>{formatPrice(lastMonthSum._sum.amount ?? 0)}</CardTitle>
+                <CardDescription>Last Month</CardDescription>
+                <CardTitle className='text-4xl'>
+                  {formatPrice(lastMonthSum._sum.amount ?? 0)}
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-muted-foreground">
-                 {formatPrice(MONTHLY_GOAL)}
-                 <span> من هدف </span>
+                <div className='text-sm text-muted-foreground'>
+                  of {formatPrice(MONTHLY_GOAL)} goal
                 </div>
               </CardContent>
               <CardFooter>
-                <Progress value={((lastMonthSum._sum.amount ?? 0) * 100 ) / MONTHLY_GOAL} />
+                <Progress
+                  value={((lastMonthSum._sum.amount ?? 0) * 100) / MONTHLY_GOAL}
+                />
               </CardFooter>
             </Card>
           </div>
 
-          <h1 className="text-4xl font-bold tracking-tight">
-            الطلبات الواردة
-          </h1>
+          <h1 className='text-4xl font-bold tracking-tight'>Incoming orders</h1>
+
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>المستخدم</TableHead>
-                <TableHead className=' sm:table-cell'>الحالة</TableHead>
-                <TableHead className=' sm:table-cell'>تاريخ الشراء</TableHead>
-                <TableHead className='text-right'>المبلغ</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead className='hidden sm:table-cell'>Status</TableHead>
+                <TableHead className='hidden sm:table-cell'>
+                  Purchase date
+                </TableHead>
+                <TableHead className='text-right'>Amount</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -113,21 +135,22 @@ export default async function DashboardPage() {
               {orders.map((order) => (
                 <TableRow key={order.id} className='bg-accent'>
                   <TableCell>
-                    <div className="font-medium">
+                    <div className='font-medium'>
                       {order.shippingAddress?.name}
                     </div>
-                    <div className="text-sm text-muted-foreground md:inline">
-                      {order.user?.email ? order.user.email : 'البريد الإلكتروني غير متوفر'}
+                    <div className='hidden text-sm text-muted-foreground md:inline'>
+                      {order.user.email}
                     </div>
                   </TableCell>
-
-                  <TableCell>
+                  <TableCell className='hidden sm:table-cell'>
                     <StatusDropdown id={order.id} orderStatus={order.status} />
                   </TableCell>
-
-                  <TableCell className='table-cell'>{order.createdAt.toLocaleDateString('ar-SA')}</TableCell>
-
-                  <TableCell className='text-right'>{formatPrice(order.amount)}</TableCell>
+                  <TableCell className='hidden md:table-cell'>
+                    {order.createdAt.toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className='text-right'>
+                    {formatPrice(order.amount)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -137,3 +160,5 @@ export default async function DashboardPage() {
     </div>
   )
 }
+
+export default Page

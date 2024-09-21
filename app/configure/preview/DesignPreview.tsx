@@ -14,7 +14,7 @@ import { createCheckoutSession } from './actions'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/use-toast'
 import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs'
-import LoginModel from '@/components/LoginModel'
+import LoginModal from '@/components/LoginModel'
 
 const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
   const router = useRouter()
@@ -43,14 +43,13 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     mutationKey: ['get-checkout-session'],
     mutationFn: createCheckoutSession,
     onSuccess: ({ url }) => {
-      if (url) {router.push(url)}
+      if (url) router.push(url)
       else throw new Error('Unable to retrieve payment URL.')
     },
-    onError: (error) => {
-      console.error('Checkout error:', error);
+    onError: () => {
       toast({
-        title: 'حدث خطأ ما',
-        description: `فشل إنشاء جلسة الدفع: ${error.message}`,
+        title: 'Something went wrong',
+        description: 'There was an error on our end. Please try again.',
         variant: 'destructive',
       })
     },
@@ -58,7 +57,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
 
   const handleCheckout = () => {
     if (user) {
-      console.log('Creating payment session for config:', id);
+      // create payment session
       createPaymentSession({ configId: id })
     } else {
       // need to log in
@@ -66,14 +65,6 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
       setIsLoginModalOpen(true)
     }
   }
-// اضفته جديد
-  useEffect(() => {
-    const storedConfigId = localStorage.getItem('configurationId');
-    if (storedConfigId && user) {
-      createPaymentSession({ configId: storedConfigId });
-      localStorage.removeItem('configurationId');
-    }
-  }, [user]);
 
   return (
     <>
@@ -86,7 +77,7 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
         />
       </div>
 
-      <LoginModel isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
+      <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
 
       <div className='mt-20 flex flex-col items-center md:grid text-sm sm:grid-cols-12 sm:grid-rows-1 sm:gap-x-6 md:gap-x-8 lg:gap-x-12'>
         <div className='md:col-span-4 lg:col-span-3 md:row-span-2 md:row-end-2'>

@@ -1,30 +1,27 @@
-"use server"
+'use server'
 
-import { db } from "@/db"
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
+import { db } from '@/db'
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
 
-type getPaymentStatusProp = {
-  orderId: string
-}
-
-export const getPaymentStatus = async ({orderId}: getPaymentStatusProp) => {
-  const {getUser} = getKindeServerSession()
+export const getPaymentStatus = async ({ orderId }: { orderId: string }) => {
+  const { getUser } = getKindeServerSession()
   const user = await getUser()
 
   if (!user?.id || !user.email) {
-    throw new Error('you need to be logged in to view this page.')
+    throw new Error('You need to be logged in to view this page.')
   }
 
-  const order = await db.order.findUnique({
-    where: {id: orderId, userId: user.id},
+  const order = await db.order.findFirst({
+    where: { id: orderId, userId: user.id },
     include: {
       billingAddress: true,
-      shippingAddress: true,
       configuration: true,
-      user: true
-    }
+      shippingAddress: true,
+      user: true,
+    },
   })
-  if (!order) throw new Error('this order dose not exist.')
+
+  if (!order) throw new Error('This order does not exist.')
 
   if (order.isPaid) {
     return order

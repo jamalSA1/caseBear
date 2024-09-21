@@ -6,7 +6,7 @@ import Stripe from 'stripe'
 import { Resend } from 'resend'
 import OrderReceivedEmail from '@/components/emails/OrderReceivedEmail'
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +14,6 @@ export async function POST(req: Request) {
     const signature = headers().get('stripe-signature')
 
     if (!signature) {
-      console.error('Invalid signature')
       return new Response('Invalid signature', { status: 400 })
     }
 
@@ -23,8 +22,6 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     )
-
-    console.log('Event received:', event)
 
     if (event.type === 'checkout.session.completed') {
       if (!event.data.object.customer_details?.email) {
@@ -74,10 +71,8 @@ export async function POST(req: Request) {
         },
       })
 
-      console.log('Order updated:', updatedOrder)
-
       await resend.emails.send({
-        from: 'CaseCobra <m0716319@gmail.com>',
+        from: 'CaseCobra <hello@joshtriedcoding.com>',
         to: [event.data.object.customer_details.email],
         subject: 'Thanks for your order!',
         react: OrderReceivedEmail({
@@ -98,7 +93,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ result: event, ok: true })
   } catch (err) {
-    console.error('Error occurred:', err)
+    console.error(err)
 
     return NextResponse.json(
       { message: 'Something went wrong', ok: false },
