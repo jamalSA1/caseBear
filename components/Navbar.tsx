@@ -14,7 +14,7 @@ export default async function Navbar() {
       <MaxWidthWrapper>
         <div className="flex items-center justify-between h-14 border-b border-zinc-200">
           <Link href="/" className="flex z-40 font-semibold">
-            Case<span className="text-green-600">Cobra</span>
+            Case<span className="text-orange-600">Bear</span>
           </Link>
 
           

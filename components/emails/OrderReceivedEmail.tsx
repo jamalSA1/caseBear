@@ -26,7 +26,7 @@ export default function OrderReceivedEmail({
   const baseUrl =
     process.env.NODE_ENV === "development"
       ? "http://localhost:3000"
-      : "https://case-cobra-mu-beige.vercel.app";
+      : "https://case-cobra-tan.vercel.app";
 
   return (
     <Html>
@@ -87,7 +87,7 @@ export default function OrderReceivedEmail({
             </Row>
             <Row>
               <Text style={footer.text}>
-                © CaseCobra, Inc. All Rights Reserved.
+                © CaseBear, Inc. All Rights Reserved.
               </Text>
             </Row>
           </Section>

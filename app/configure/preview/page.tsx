@@ -1,29 +1,26 @@
-import { db } from '@/db'
-import { notFound } from 'next/navigation'
-import DesignPreview from './DesignPreview'
+import { db } from "@/db";
+import { notFound } from "next/navigation";
+import React from "react";
+import DesignPreview from "./DesignPreview";
 
-interface PageProps {
+interface PriviewPageProps {
   searchParams: {
-    [key: string]: string | string[] | undefined
-  }
+    [key: string]: string | string[] | undefined;
+  };
 }
 
-const Page = async ({ searchParams }: PageProps) => {
-  const { id } = searchParams
-
+export default async function PriviewPage({ searchParams }: PriviewPageProps) {
+  const { id } = searchParams;
   if (!id || typeof id !== 'string') {
     return notFound()
   }
 
-  const configuration = await db.configuration.findUnique({
-    where: { id },
+  const configration = await db.configuration.findUnique({
+    where: {id}
   })
-
-  if(!configuration) {
+  if (!configration) {
     return notFound()
   }
 
-  return <DesignPreview configuration={configuration} />
+  return <DesignPreview configuration={configration} />
 }
-
-export default Page

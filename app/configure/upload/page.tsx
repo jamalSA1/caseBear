@@ -4,7 +4,7 @@ import { Progress } from '@/components/ui/progress'
 import { useToast } from '@/components/ui/use-toast'
 import { useUploadThing } from '@/lib/uploadthing'
 import { cn } from '@/lib/utils'
-import { Image, Loader2, MousePointerSquareDashed } from 'lucide-react'
+import { Image, Loader2, MousePointerSquareDashed, Upload } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import Dropzone, { FileRejection } from 'react-dropzone'
@@ -13,6 +13,7 @@ const Page = () => {
   const { toast } = useToast()
   const [isDragOver, setIsDragOver] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
+  const [isSelectingFile, setIsSelectingFile] = useState<boolean>(false)
   const router = useRouter()
 
   const { startUpload, isUploading } = useUploadThing('imageUploader', {
@@ -25,6 +26,14 @@ const Page = () => {
     onUploadProgress(p) {
       setUploadProgress(p)
     },
+    onUploadError: (error) => {
+      console.error('خطأ في التحميل:', error)
+      toast({
+        title: 'فشل التحميل',
+        description: 'حدث خطأ أثناء تحميل الصورة. يرجى المحاولة مرة أخرى.',
+        variant: 'destructive'
+      })
+    }
   })
 
   const onDropRejected = (rejectedFiles: FileRejection[]) => {
@@ -65,7 +74,9 @@ const Page = () => {
             'image/jpg': ['.jpg'],
           }}
           onDragEnter={() => setIsDragOver(true)}
-          onDragLeave={() => setIsDragOver(false)}>
+          onDragLeave={() => setIsDragOver(false)}
+          onFileDialogOpen={() => setIsSelectingFile(true)}
+          onFileDialogCancel={() => setIsSelectingFile(false)}>
           {({ getRootProps, getInputProps }) => (
             <div
               className='h-full w-full flex-1 flex flex-col items-center justify-center'
@@ -75,6 +86,8 @@ const Page = () => {
                 <MousePointerSquareDashed className='h-6 w-6 text-zinc-500 mb-2' />
               ) : isUploading || isPending ? (
                 <Loader2 className='animate-spin h-6 w-6 text-zinc-500 mb-2' />
+              ) : isSelectingFile ? (
+                <Upload className='h-6 w-6 text-zinc-500 mb-2 animate-pulse' />
               ) : (
                 <Image className='h-6 w-6 text-zinc-500 mb-2' />
               )}
