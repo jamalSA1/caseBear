@@ -30,7 +30,7 @@ export default function Steps() {
         const isCurrent = pathname.endsWith(step.url)
         const isCompleted = STEPS.slice(index + 1).some((step) => pathname.endsWith(step.url))
 
-        const imgPath = `/snake-${index + 1}.png`
+        const imgPath = `/bear-${index + 1}.jpeg`
 
         return <li key={step.name} className="relative overflow-hidden lg:flex-1">
           <div>
