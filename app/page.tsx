@@ -1,6 +1,6 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Image from "next/image";
-import logoSnake from "@/public/snake-1.png";
+import logoBear from "@/public/bear-1.png";
 import user1 from "@/public/users/user-1.png";
 import user2 from "@/public/users/user-2.png";
 import user3 from "@/public/users/user-3.png";
@@ -21,7 +21,7 @@ export default function Home() {
           <div className="col-span-2 px-6 lg:px-0 lg:pt-4">
             <div className="relative mx-auto text-center lg:text-left flex flex-col items-center lg:items-start">
               <div className="absolute w-28 left-0 -top-20 hidden lg:block">
-                <Image src={logoSnake} alt="logo" className="w-full" />
+                <Image src={logoBear} alt="logo" className="w-full" />
               </div>
               <h1 className="relative w-fit tracking-tighter text-balance mt-16 font-bold !leading-tight text-gray-900 text-5xl md:text-6xl lg:text-7xl">
                 Your image on a{" "}
@@ -124,7 +124,7 @@ export default function Home() {
               </span>say..
             </h2>
             <img
-              src="/snake-2.png"
+              src="/bear-2.png"
               alt="image"
               className="w-24 order-0 lg:order-2"
             />
